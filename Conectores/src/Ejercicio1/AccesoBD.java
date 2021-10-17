@@ -51,53 +51,35 @@ public class AccesoBD {
 	}
 
 	public ResultSet consultaLocalidad(String loc) {
-		PreparedStatement pstm = null;
-		String consultaSQL = "SELECT * FROM Socio";
-		if (loc.isEmpty()) {
-			try {
+		try {
+			PreparedStatement pstm;
+			String consultaSQL = "SELECT * FROM Socio";
+			if (loc.isEmpty()) {
 				pstm = conecta.prepareStatement(consultaSQL);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		else {
-			consultaSQL = "SELECT * FROM Socio WHERE  localidad = ?";
-			try {
+			} else {
+				consultaSQL = "SELECT * FROM Socio WHERE  localidad = ?";
 				pstm = conecta.prepareStatement(consultaSQL);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
 				pstm.setString(1, loc);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-			try {
-				return pstm.executeQuery();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			return (pstm.executeQuery());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			return null;
 		}
-		
-		return null;
 	}
 
 	public void imprimeDatos(ResultSet rs) {
-		int filas;
-		System.out.println();
+		// imprime datos del result set
+		int filas = 0;
+		try {
+			rs.last();
+			filas = rs.getRow();
+			rs.first();
+			System.out.println(filas);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-
 }
