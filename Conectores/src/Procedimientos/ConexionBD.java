@@ -3,9 +3,7 @@
  */
 package Procedimientos;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * @author David♥
@@ -13,7 +11,7 @@ import java.sql.SQLException;
  */
 public class ConexionBD {
 	private String driver = "com.mysql.cj.jdbc.Driver";
-	private String database = "baloncesto";
+	private String database = "pedidos";
 	private String hostname = "localhost";
 	private String port = "3306";
 	private String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database + "?serverTimezone=Europe/Madrid";
@@ -32,8 +30,25 @@ public class ConexionBD {
 		}
 	}
 
-	public void incrementaPrecioCategoria(int cat, int porcentaje) {
-		
+	public boolean incrementaPrecioCategoria(int cat, int porcentaje) {
+		try {
+			CallableStatement callstmt = conecta.prepareCall("CALL incrementarPrecioCategoria(?,?,?)");
+			callstmt.setInt(1, cat);
+			callstmt.setInt(2, porcentaje);
+			callstmt.registerOutParameter(3, Types.INTEGER);
+			if (callstmt.execute()) {// true if the first result is a ResultSetobject;
+										// false if the first result is an updatecount or there is no result
+				System.out.println(callstmt.getInt(3));
+				return true;
+			} else {
+				callstmt.close();
+				return false;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.getMessage();
+		}
+		return false;
 	}
 
 	public void desconexion() {
