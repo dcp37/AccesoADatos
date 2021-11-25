@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.org/dtd/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+<type-mapping>
+	<sql-type jdbc-type="VARCHAR" hibernate-type="string"></sql-type>
+	<sql-type jdbc-type="VARCHAR" hibernate-type="string"></sql-type>
+	<sql-type jdbc-type="VARCHAR" hibernate-type="string"></sql-type>
+</type-mapping>
+
+
+<table-filter match-catalog="ejemplo3" match-name="departamentos" />
+	<table-filter match-catalog="ejemplo3" match-name="empleados" />
+	<table-filter match-catalog="ejemplo3" match-name="nuevos" />
+	<table catalog="ejemplo3" name="departamentos">
+		<column name="dept_no"></column>
+		<column name="loc"></column>
+		<column name="dnombre"></column>
+	</table>
+	<table catalog="ejemplo3" name="empleados">
+		<column name="emp_no"></column>
+		<column name="apellido"></column>
+		<column name="dept_no"></column>
+		<column name="oficio"></column>
+		<column name="salario"></column>
+		<column name="fecha_alt"></column>
+		<column name="dir"></column>
+		<column name="comision"></column>
+	</table>
+	<table catalog="ejemplo3" name="nuevos">
+		<column name="dept_no"></column>
+		<column name="loc"></column>
+		<column name="dnombre"></column>
+	</table>
+</hibernate-reverse-engineering>
