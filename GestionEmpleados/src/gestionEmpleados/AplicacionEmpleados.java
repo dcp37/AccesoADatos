@@ -5,23 +5,24 @@ import Generado.*;
 import javax.swing.JFrame;
 import java.awt.Toolkit;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import com.toedter.calendar.JCalendar;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.DefaultComboBoxModel;
+import java.util.Iterator;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Iterator;
-import java.util.List;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.swing.JFormattedTextField;
 
 public class AplicacionEmpleados {
 
@@ -30,13 +31,14 @@ public class AplicacionEmpleados {
 	private JTextField txtApellido;
 	private JTextField txtOficio;
 	private JTextField txtSalario;
-	private JTextField txtComision;
+	private JFormattedTextField txtComision;
 	private JLabel lblOficio;
 	private JTextField txtFecha;
 	private JComboBox<String> CombBoxDirector;
 	private JButton btnInsertar;
 	private JButton btnEliminar;
 	private JButton btnModificar;
+	private JCalendar calendario;
 	// private static SessionFactory sessionF;
 	// private static Session sesion;
 
@@ -68,6 +70,25 @@ public class AplicacionEmpleados {
 	 */
 	private void initialize() {
 		frmGestinEmpleados = new JFrame();
+		frmGestinEmpleados.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowOpened(WindowEvent e) {
+
+				SessionFactory sf = miSessionFactory.getSf();
+				Session session = sf.openSession();
+				String query = "FROM Empleados e WHERE e.oficio = 'DIRECTOR'";
+				Query q = session.createQuery(query);
+
+				// List<Empleados> lista = q.list();
+				// Iterator iterator = lista.iterator();
+
+				Iterator<Empleados> iterator = q.iterate();
+				while (iterator.hasNext()) {
+					Empleados directores = iterator.next();
+					CombBoxDirector.addItem(directores.getApellido());
+				}
+			}
+		});
 		frmGestinEmpleados.setTitle("GESTIÓN EMPLEADOS");
 		frmGestinEmpleados.setIconImage(
 				Toolkit.getDefaultToolkit().getImage("C:\\Users\\dam2alu2\\Pictures\\Saved Pictures\\Doom_guy.jpg"));
@@ -79,12 +100,6 @@ public class AplicacionEmpleados {
 		lblNumEmpleado.setBounds(25, 26, 79, 14);
 		frmGestinEmpleados.getContentPane().add(lblNumEmpleado);
 
-		txtNumEmp = new JTextField();
-		lblNumEmpleado.setLabelFor(txtNumEmp);
-		txtNumEmp.setBounds(114, 23, 86, 20);
-		frmGestinEmpleados.getContentPane().add(txtNumEmp);
-		txtNumEmp.setColumns(10);
-
 		JButton btnBuscarEmpleado = new JButton("Buscar \uD83D\uDD0EEmpleado");
 		btnBuscarEmpleado.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -92,19 +107,35 @@ public class AplicacionEmpleados {
 					SessionFactory sf = miSessionFactory.getSf();// llama a la clase principal, y después a la
 					// creada
 					Session sesion = sf.openSession();
-					String hql = "from Empleados WHERE emp_no = " + txtNumEmp.getText();
+					String hql = "from Empleados WHERE emp_no =" + txtNumEmp.getText();
 					Query query = sesion.createQuery(hql);
-					Empleados empleado = (Empleados) query.uniqueResult();
+					if (txtNumEmp.getText().isEmpty()) {
+						txtApellido.setText("");
+						txtOficio.setText("");
+						txtSalario.setText("");
 
-					txtOficio.setText(empleado.getOficio());
-					txtApellido.setText(empleado.getApellido());
-					txtSalario.setText(empleado.getSalario().toString());
-					txtComision.setText(empleado.getComision().toString());
-					txtFecha.setText(empleado.getFechaAlt().toString());
+						JOptionPane.showMessageDialog(null, e);
+						sesion.close();
+						sf.close();
+					}
+					/*
+					 * else if (query.getQueryString()!="") {
+					 * 
+					 * }
+					 */
+					else {
 
-					sesion.close();
-					sf.close();
+						Empleados empleado = (Empleados) query.uniqueResult();
 
+						txtOficio.setText(empleado.getOficio());
+						txtApellido.setText(empleado.getApellido());
+						txtSalario.setText(empleado.getSalario().toString());
+						txtComision.setValue(empleado.getComision());
+						txtFecha.setText(empleado.getFechaAlt().toString());
+
+						sesion.close();
+						sf.close();
+					}
 				}
 			}
 		});
@@ -118,46 +149,27 @@ public class AplicacionEmpleados {
 		lblApellido.setBounds(25, 69, 63, 14);
 		frmGestinEmpleados.getContentPane().add(lblApellido);
 
-		txtApellido = new JTextField();
-		txtApellido.setColumns(10);
-		txtApellido.setBounds(114, 66, 86, 20);
-		frmGestinEmpleados.getContentPane().add(txtApellido);
-
 		lblOficio = new JLabel("OFICIO");
 		lblOficio.setBounds(25, 112, 63, 14);
 		frmGestinEmpleados.getContentPane().add(lblOficio);
-
-		txtOficio = new JTextField();
-		txtOficio.setColumns(10);
-		txtOficio.setBounds(114, 109, 86, 20);
-		frmGestinEmpleados.getContentPane().add(txtOficio);
 
 		JLabel lblSalario = new JLabel("SALARIO");
 		lblSalario.setBounds(25, 163, 63, 14);
 		frmGestinEmpleados.getContentPane().add(lblSalario);
 
-		txtSalario = new JTextField();
-		txtSalario.setColumns(10);
-		txtSalario.setBounds(114, 160, 86, 20);
-		frmGestinEmpleados.getContentPane().add(txtSalario);
-
 		JLabel lblNumEmpleado_4 = new JLabel("COMISION");
-		lblNumEmpleado_4.setBounds(25, 227, 63, 14);
+		lblNumEmpleado_4.setBounds(291, 202, 63, 14);
 		frmGestinEmpleados.getContentPane().add(lblNumEmpleado_4);
 
-		txtComision = new JTextField();
+		txtComision = new JFormattedTextField();
 		txtComision.setColumns(10);
-		txtComision.setBounds(114, 224, 86, 20);
+		txtComision.setBounds(380, 199, 86, 20);
+		txtComision.setValue(new Double(0.00));
 		frmGestinEmpleados.getContentPane().add(txtComision);
 
 		JLabel lblFecha = new JLabel("FECHA");
-		lblFecha.setBounds(239, 230, 63, 14);
+		lblFecha.setBounds(25, 217, 63, 14);
 		frmGestinEmpleados.getContentPane().add(lblFecha);
-
-		txtFecha = new JTextField();
-		txtFecha.setColumns(10);
-		txtFecha.setBounds(328, 227, 86, 20);
-		frmGestinEmpleados.getContentPane().add(txtFecha);
 
 		JComboBox<String> CombBoxDepartamento = new JComboBox<String>();
 		CombBoxDepartamento.setModel(new DefaultComboBoxModel<String>(
@@ -169,42 +181,7 @@ public class AplicacionEmpleados {
 		CombBoxDirector = new JComboBox<String>();
 		// CombBoxDirector.setModel(new DefaultComboBoxModel<String>(new String[] {
 		// "kk", "qlo", "pedo" }));
-		CombBoxDirector.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
 
-				SessionFactory sf = miSessionFactory.getSf();
-				Session session = sf.openSession();
-				String query = "FROM Empleados e WHERE e.oficio = 'DIRECTOR'";
-				Query q = session.createQuery(query);
-
-				// List<Empleados> lista = q.list();
-				// Iterator iterator = lista.iterator();
-
-				List<Empleados> lista = q.list();
-				Iterator<Empleados> iterator = lista.iterator();
-				System.out.println("Número de Directores: " + lista.size());
-				while (iterator.hasNext()) {
-					Empleados directores = iterator.next();
-					String[] apellidosDirectores = new String[] { directores.getApellido() };
-
-					String ListaDirectores[] = new String[apellidosDirectores.length];
-
-					for (int i = 0; i < apellidosDirectores.length; i++) {
-
-						// String apellidoDirector = "*";
-						ListaDirectores[i] = apellidosDirectores[i];
-						// System.out.println(apellidoDirector);
-					} // txtApellido.setText(directores.getApellido());
-						// txtOficio.setText(directores.getOficio());
-						// txtComision.setText(directores.getComision().toString());// es double
-					CombBoxDirector.setModel(new DefaultComboBoxModel<String>(ListaDirectores));
-
-				}
-				session.close();
-				// System.exit(0);
-			}
-		});
 		CombBoxDirector.setToolTipText("Elige un director");
 		CombBoxDirector.setBounds(290, 137, 176, 20);
 		frmGestinEmpleados.getContentPane().add(CombBoxDirector);
@@ -234,5 +211,37 @@ public class AplicacionEmpleados {
 		});
 		btnModificar.setBounds(292, 285, 113, 23);
 		frmGestinEmpleados.getContentPane().add(btnModificar);
+
+		txtOficio = new JTextField();
+		txtOficio.setBounds(116, 109, 86, 20);
+		frmGestinEmpleados.getContentPane().add(txtOficio);
+		txtOficio.setColumns(10);
+
+		txtSalario = new JTextField();
+		txtSalario.setBounds(116, 160, 86, 20);
+		frmGestinEmpleados.getContentPane().add(txtSalario);
+		txtSalario.setColumns(10);
+
+		txtFecha = new JTextField();
+		// txtFecha.setBounds(116, 214, 86, 20);
+		// frmGestinEmpleados.getContentPane().add(txtFecha);
+		txtFecha.setColumns(10);
+
+		txtApellido = new JTextField();
+		txtApellido.setBounds(116, 66, 86, 20);
+		frmGestinEmpleados.getContentPane().add(txtApellido);
+		txtApellido.setColumns(10);
+
+		txtNumEmp = new JTextField();
+		txtNumEmp.setBounds(116, 23, 86, 20);
+		frmGestinEmpleados.getContentPane().add(txtNumEmp);
+		lblNumEmpleado.setLabelFor(txtNumEmp);
+		txtNumEmp.setColumns(10);
+
+		calendario = new JCalendar();
+		calendario.setBounds(116, 214, 200, 200);
+		
+		frmGestinEmpleados.getContentPane().add(calendario);
+
 	}
 }

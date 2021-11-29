@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="C:/Users/dam2alu2/eclipse-workspace/LIBRERIAS/hibernate-lib-20211111T083232Z-001/hibernate-lib/jboss-logging-annotations-1.2.0.Beta1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/dam2alu2/eclipse-workspace/LIBRERIAS/hibernate-lib-20211111T083232Z-001/hibernate-lib/jboss-transaction-api_1.2_spec-1.0.0.Final.jar"/>
 	<classpathentry kind="con" path="org.eclipse.datatools.connectivity.jdt.DRIVERLIBRARY/MySQL JDBC Driver"/>
+	<classpathentry kind="lib" path="C:/Users/dam2alu2/eclipse-workspace/LIBRERIAS/jcalendar-1.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
