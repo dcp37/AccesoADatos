@@ -13,6 +13,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JTextFieldDateEditor;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -22,7 +23,10 @@ import javax.swing.DefaultComboBoxModel;
 import java.util.Iterator;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Date;
 import javax.swing.JFormattedTextField;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 
 public class AplicacionEmpleados {
 
@@ -39,6 +43,8 @@ public class AplicacionEmpleados {
 	private JButton btnEliminar;
 	private JButton btnModificar;
 	private JCalendar calendario;
+	private JTextFieldDateEditor txtfechaedit;
+
 	// private static SessionFactory sessionF;
 	// private static Session sesion;
 
@@ -92,7 +98,7 @@ public class AplicacionEmpleados {
 		frmGestinEmpleados.setTitle("GESTIÓN EMPLEADOS");
 		frmGestinEmpleados.setIconImage(
 				Toolkit.getDefaultToolkit().getImage("C:\\Users\\dam2alu2\\Pictures\\Saved Pictures\\Doom_guy.jpg"));
-		frmGestinEmpleados.setBounds(100, 100, 510, 407);
+		frmGestinEmpleados.setBounds(100, 100, 827, 502);
 		frmGestinEmpleados.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmGestinEmpleados.getContentPane().setLayout(null);
 
@@ -103,28 +109,18 @@ public class AplicacionEmpleados {
 		JButton btnBuscarEmpleado = new JButton("Buscar \uD83D\uDD0EEmpleado");
 		btnBuscarEmpleado.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				SessionFactory sf = miSessionFactory.getSf();// llama a la clase principal, y después a la
+				// creada
+				Session sesion = sf.openSession();
 				if (e.getSource() != null) {
-					SessionFactory sf = miSessionFactory.getSf();// llama a la clase principal, y después a la
-					// creada
-					Session sesion = sf.openSession();
-					String hql = "from Empleados WHERE emp_no =" + txtNumEmp.getText();
-					Query query = sesion.createQuery(hql);
+
+					String hql = "from Empleados WHERE emp_no = " + txtNumEmp.getText();
 					if (txtNumEmp.getText().isEmpty()) {
-						txtApellido.setText("");
-						txtOficio.setText("");
-						txtSalario.setText("");
+						txtNumEmp.setText(JOptionPane.showInputDialog("No has introducido un número de empleado"));
 
-						JOptionPane.showMessageDialog(null, e);
-						sesion.close();
-						sf.close();
-					}
-					/*
-					 * else if (query.getQueryString()!="") {
-					 * 
-					 * }
-					 */
-					else {
+					} else {
 
+						Query query = sesion.createQuery(hql);
 						Empleados empleado = (Empleados) query.uniqueResult();
 
 						txtOficio.setText(empleado.getOficio());
@@ -132,15 +128,15 @@ public class AplicacionEmpleados {
 						txtSalario.setText(empleado.getSalario().toString());
 						txtComision.setValue(empleado.getComision());
 						txtFecha.setText(empleado.getFechaAlt().toString());
-
 						sesion.close();
 						sf.close();
 					}
 				}
+
 			}
 		});
 		btnBuscarEmpleado.setToolTipText("Busca un empleado por su n\u00FAmero");
-		btnBuscarEmpleado.setBounds(341, 22, 125, 23);
+		btnBuscarEmpleado.setBounds(676, 26, 125, 23);
 
 		frmGestinEmpleados.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmGestinEmpleados.getContentPane().add(btnBuscarEmpleado);
@@ -158,12 +154,12 @@ public class AplicacionEmpleados {
 		frmGestinEmpleados.getContentPane().add(lblSalario);
 
 		JLabel lblNumEmpleado_4 = new JLabel("COMISION");
-		lblNumEmpleado_4.setBounds(291, 202, 63, 14);
+		lblNumEmpleado_4.setBounds(626, 206, 63, 14);
 		frmGestinEmpleados.getContentPane().add(lblNumEmpleado_4);
 
 		txtComision = new JFormattedTextField();
 		txtComision.setColumns(10);
-		txtComision.setBounds(380, 199, 86, 20);
+		txtComision.setBounds(715, 203, 86, 20);
 		txtComision.setValue(new Double(0.00));
 		frmGestinEmpleados.getContentPane().add(txtComision);
 
@@ -175,7 +171,7 @@ public class AplicacionEmpleados {
 		CombBoxDepartamento.setModel(new DefaultComboBoxModel<String>(
 				new String[] { "10/CONTABILIDAD", "20/INVESTIGACION", "30/VENTAS", "40/PRODUCCION" }));
 		CombBoxDepartamento.setToolTipText("Elige un Departamento");
-		CombBoxDepartamento.setBounds(290, 92, 176, 20);
+		CombBoxDepartamento.setBounds(625, 96, 176, 20);
 		frmGestinEmpleados.getContentPane().add(CombBoxDepartamento);
 
 		CombBoxDirector = new JComboBox<String>();
@@ -183,17 +179,46 @@ public class AplicacionEmpleados {
 		// "kk", "qlo", "pedo" }));
 
 		CombBoxDirector.setToolTipText("Elige un director");
-		CombBoxDirector.setBounds(290, 137, 176, 20);
+		CombBoxDirector.setBounds(625, 141, 176, 20);
 		frmGestinEmpleados.getContentPane().add(CombBoxDirector);
 
 		btnInsertar = new JButton("INSERTAR");
 		btnInsertar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
 
-				// Session sesion = sessionF.getSf();
+			public void actionPerformed(ActionEvent e) {
+				SessionFactory sf = miSessionFactory.getSf();
+				Session sesion = sf.openSession();
+				// comprobar si ya existe el número empleado
+				if (txtNumEmp.getText().isEmpty()) {
+					txtNumEmp.setText(JOptionPane.showInputDialog("No has introducido un número de empleado"));
+				} else if (txtApellido.getText().isEmpty()) {
+					txtApellido.setText(JOptionPane.showInputDialog("No has introducido un Apellido"));
+				} else if (txtOficio.getText().isEmpty()) {
+					txtOficio.setText(JOptionPane.showInputDialog("No has introducido un oficio"));
+				} else if (txtSalario.getText().isEmpty()) {
+					txtSalario.setText(JOptionPane.showInputDialog("No has introducido un salario"));
+				} else {
+					String hql = "FROM Empleados WHERE empno = " + txtNumEmp.getText();
+					Query query = sesion.createQuery(hql);
+					if (query.uniqueResult() == null) {
+						sesion.beginTransaction();
+
+						Departamentos d = new Departamentos(Byte.parseByte("1"), "", "", null);
+						Empleados em = new Empleados(Short.parseShort(txtNumEmp.getText()), d, "apellido", "oficio",
+								(short) 5, Date.valueOf(txtFecha.getText()), Float.valueOf(txtSalario.getText()),
+								Float.valueOf(txtComision.getText()));
+
+						sesion.save(em);
+						sesion.beginTransaction().commit();
+						JOptionPane.showConfirmDialog(null, "Se ha introducido un nuevo empleado");
+					} else {
+						JOptionPane.showConfirmDialog(null, "No se ha podido insertar un nuevo empleado");
+					}
+				}
+
 			}
 		});
-		btnInsertar.setBounds(37, 285, 89, 23);
+		btnInsertar.setBounds(10, 424, 248, 27);
 		frmGestinEmpleados.getContentPane().add(btnInsertar);
 
 		btnEliminar = new JButton("ELIMINAR");
@@ -201,7 +226,7 @@ public class AplicacionEmpleados {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnEliminar.setBounds(160, 285, 89, 23);
+		btnEliminar.setBounds(283, 422, 248, 30);
 		frmGestinEmpleados.getContentPane().add(btnEliminar);
 
 		btnModificar = new JButton("MODIFICAR");
@@ -209,7 +234,7 @@ public class AplicacionEmpleados {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnModificar.setBounds(292, 285, 113, 23);
+		btnModificar.setBounds(553, 422, 248, 30);
 		frmGestinEmpleados.getContentPane().add(btnModificar);
 
 		txtOficio = new JTextField();
@@ -223,10 +248,17 @@ public class AplicacionEmpleados {
 		txtSalario.setColumns(10);
 
 		txtFecha = new JTextField();
-		// txtFecha.setBounds(116, 214, 86, 20);
-		// frmGestinEmpleados.getContentPane().add(txtFecha);
+		// txtFecha.setEditable(false);
+		txtFecha.setBounds(116, 214, 86, 20);
+		frmGestinEmpleados.getContentPane().add(txtFecha);
 		txtFecha.setColumns(10);
-
+		
+		txtfechaedit = new JTextFieldDateEditor();
+		txtfechaedit.setBounds(116, 244, 86, 20);
+		frmGestinEmpleados.getContentPane().add(txtfechaedit);
+		txtfechaedit.setColumns(10);
+		txtfechaedit.setDateFormatString("yyyy-MM-dd");
+		
 		txtApellido = new JTextField();
 		txtApellido.setBounds(116, 66, 86, 20);
 		frmGestinEmpleados.getContentPane().add(txtApellido);
@@ -239,9 +271,12 @@ public class AplicacionEmpleados {
 		txtNumEmp.setColumns(10);
 
 		calendario = new JCalendar();
-		calendario.setBounds(116, 214, 200, 200);
-		
+		calendario.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) {
+				txtFecha.setText(String.format("%tF", calendario.getDate()));
+			}
+		});
+		calendario.setBounds(237, 204, 318, 209);
 		frmGestinEmpleados.getContentPane().add(calendario);
-
 	}
 }
