@@ -11,6 +11,7 @@ import javax.swing.JTextField;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JTextFieldDateEditor;
@@ -23,9 +24,9 @@ import javax.swing.DefaultComboBoxModel;
 import java.util.Iterator;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.Date;
 import javax.swing.JFormattedTextField;
 import java.beans.PropertyChangeListener;
+import java.sql.Date;
 import java.beans.PropertyChangeEvent;
 
 public class AplicacionEmpleados {
@@ -37,13 +38,16 @@ public class AplicacionEmpleados {
 	private JTextField txtSalario;
 	private JFormattedTextField txtComision;
 	private JLabel lblOficio;
-	private JTextField txtFecha;
+
 	private JComboBox<String> CombBoxDirector;
+	private JComboBox<String> CombBoxDepartamento;
 	private JButton btnInsertar;
 	private JButton btnEliminar;
 	private JButton btnModificar;
 	private JCalendar calendario;
 	private JTextFieldDateEditor txtfechaedit;
+	private Empleados directores;
+	private Departamentos departamentos;
 
 	// private static SessionFactory sessionF;
 	// private static Session sesion;
@@ -83,6 +87,7 @@ public class AplicacionEmpleados {
 				SessionFactory sf = miSessionFactory.getSf();
 				Session session = sf.openSession();
 				String query = "FROM Empleados e WHERE e.oficio = 'DIRECTOR'";
+				String queryd = "FROM Departamentos";
 				Query q = session.createQuery(query);
 
 				// List<Empleados> lista = q.list();
@@ -90,9 +95,23 @@ public class AplicacionEmpleados {
 
 				Iterator<Empleados> iterator = q.iterate();
 				while (iterator.hasNext()) {
-					Empleados directores = iterator.next();
-					CombBoxDirector.addItem(directores.getApellido());
+					directores = iterator.next();
+					CombBoxDirector.addItem(directores.getApellido() + "/" + directores.getEmpNo());
 				}
+				q = session.createQuery(queryd);
+				Iterator<Departamentos> iteratord = q.iterate();
+				while (iteratord.hasNext()) {
+					departamentos = iteratord.next();
+					CombBoxDepartamento.addItem(departamentos.getDeptNo() + "/" + departamentos.getDnombre());
+				}
+
+				/*
+				 * query = "FROM Departamentos "; q = session.createQuery(query); iterator =
+				 * q.iterate(); while (iterator.hasNext()) { departamentos = iterator.next();
+				 * CombBoxDepartamento.addItem(departamentos.getDeptNo() + "/" +
+				 * departamentos.getDnombre()); } sf.close();
+				 */
+				sf.close();
 			}
 		});
 		frmGestinEmpleados.setTitle("GESTIÓN EMPLEADOS");
@@ -109,25 +128,28 @@ public class AplicacionEmpleados {
 		JButton btnBuscarEmpleado = new JButton("Buscar \uD83D\uDD0EEmpleado");
 		btnBuscarEmpleado.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SessionFactory sf = miSessionFactory.getSf();// llama a la clase principal, y después a la
-				// creada
-				Session sesion = sf.openSession();
-				if (e.getSource() != null) {
+				txtOficio.setText("");
+				txtApellido.setText("");
+				txtSalario.setText("");
+				txtComision.setValue(0);
+				txtfechaedit.setText("");
 
-					String hql = "from Empleados WHERE emp_no = " + txtNumEmp.getText();
+				if (e.getSource() != null) {
+					String hql = "from Empleados as e WHERE e.empNo = " + txtNumEmp.getText();
+					String hql2 = "";
 					if (txtNumEmp.getText().isEmpty()) {
 						txtNumEmp.setText(JOptionPane.showInputDialog("No has introducido un número de empleado"));
-
 					} else {
-
+						SessionFactory sf = miSessionFactory.getSf();// llama a la clase principal, y después a la
+						// creada
+						Session sesion = sf.openSession();
 						Query query = sesion.createQuery(hql);
 						Empleados empleado = (Empleados) query.uniqueResult();
-
 						txtOficio.setText(empleado.getOficio());
 						txtApellido.setText(empleado.getApellido());
 						txtSalario.setText(empleado.getSalario().toString());
 						txtComision.setValue(empleado.getComision());
-						txtFecha.setText(empleado.getFechaAlt().toString());
+						txtfechaedit.setText(empleado.getFechaAlt().toString());
 						sesion.close();
 						sf.close();
 					}
@@ -167,9 +189,11 @@ public class AplicacionEmpleados {
 		lblFecha.setBounds(25, 217, 63, 14);
 		frmGestinEmpleados.getContentPane().add(lblFecha);
 
-		JComboBox<String> CombBoxDepartamento = new JComboBox<String>();
-		CombBoxDepartamento.setModel(new DefaultComboBoxModel<String>(
-				new String[] { "10/CONTABILIDAD", "20/INVESTIGACION", "30/VENTAS", "40/PRODUCCION" }));
+		CombBoxDepartamento = new JComboBox<String>();
+		/*
+		 * CombBoxDepartamento.setModel(new DefaultComboBoxModel<String>( new String[] {
+		 * "10/CONTABILIDAD", "20/INVESTIGACION", "30/VENTAS", "40/PRODUCCION" }));
+		 */
 		CombBoxDepartamento.setToolTipText("Elige un Departamento");
 		CombBoxDepartamento.setBounds(625, 96, 176, 20);
 		frmGestinEmpleados.getContentPane().add(CombBoxDepartamento);
@@ -186,34 +210,53 @@ public class AplicacionEmpleados {
 		btnInsertar.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				SessionFactory sf = miSessionFactory.getSf();
-				Session sesion = sf.openSession();
-				// comprobar si ya existe el número empleado
-				if (txtNumEmp.getText().isEmpty()) {
-					txtNumEmp.setText(JOptionPane.showInputDialog("No has introducido un número de empleado"));
-				} else if (txtApellido.getText().isEmpty()) {
-					txtApellido.setText(JOptionPane.showInputDialog("No has introducido un Apellido"));
-				} else if (txtOficio.getText().isEmpty()) {
-					txtOficio.setText(JOptionPane.showInputDialog("No has introducido un oficio"));
-				} else if (txtSalario.getText().isEmpty()) {
-					txtSalario.setText(JOptionPane.showInputDialog("No has introducido un salario"));
-				} else {
-					String hql = "FROM Empleados WHERE empno = " + txtNumEmp.getText();
-					Query query = sesion.createQuery(hql);
-					if (query.uniqueResult() == null) {
-						sesion.beginTransaction();
+				try {
+					SessionFactory sf = miSessionFactory.getSf();
+					System.out.println("SessionFactory echo");
+					Session sesion = sf.openSession();
+					System.out.println("Session echo");
+					Transaction tx = sesion.beginTransaction();
+					System.out.println("Transaction echo");
 
-						Departamentos d = new Departamentos(Byte.parseByte("1"), "", "", null);
-						Empleados em = new Empleados(Short.parseShort(txtNumEmp.getText()), d, "apellido", "oficio",
-								(short) 5, Date.valueOf(txtFecha.getText()), Float.valueOf(txtSalario.getText()),
-								Float.valueOf(txtComision.getText()));
+					short numEmp = Short.valueOf(txtNumEmp.getText());
+					Departamentos d = departamentos;
+					String apellEmp = txtApellido.getText();
+					String ofiEmp = txtOficio.getText();
+					short dirEmp = directores.getEmpNo();
+					String fechaEmp = txtfechaedit.getText();
+					Float salEmp = Float.valueOf(txtSalario.getText());
+					Float comEmp = Float.valueOf(txtComision.getText());
+					System.out.println("Inserción de datos echo");
 
-						sesion.save(em);
-						sesion.beginTransaction().commit();
-						JOptionPane.showConfirmDialog(null, "Se ha introducido un nuevo empleado");
+					// comprobar si ya existe el número empleado
+					if (txtNumEmp.getText().isEmpty()) {
+						txtNumEmp.setText(JOptionPane.showInputDialog("No has introducido un número de empleado"));
+					} else if (txtApellido.getText().isEmpty()) {
+						txtApellido.setText(JOptionPane.showInputDialog("No has introducido un Apellido"));
+					} else if (txtOficio.getText().isEmpty()) {
+						txtOficio.setText(JOptionPane.showInputDialog("No has introducido un oficio"));
+					} else if (txtSalario.getText().isEmpty()) {
+						txtSalario.setText(JOptionPane.showInputDialog("No has introducido un salario"));
 					} else {
+						Empleados em = new Empleados(numEmp, d, apellEmp, ofiEmp, dirEmp, Date.valueOf(fechaEmp),
+								salEmp, comEmp);
+						sesion.save(em);
+						tx.commit();
+						/*
+						 * Departamentos d = new Departamentos(Byte.parseByte("1"), "", "", null);
+						 * Empleados em = new Empleados(Short.parseShort(txtNumEmp.getText()), d,
+						 * "apellido", "oficio", (short) 5, Date.valueOf(txtfechaedit.getText()),
+						 * Float.valueOf(txtSalario.getText()), Float.valueOf(txtComision.getText()));
+						 */
+
+						JOptionPane.showConfirmDialog(null, "Se ha introducido un nuevo empleado");
+						tx.commit();
+						sesion.close();
 						JOptionPane.showConfirmDialog(null, "No se ha podido insertar un nuevo empleado");
+
 					}
+				} catch (Exception ex) {
+					System.out.println(ex);
 				}
 
 			}
@@ -247,18 +290,12 @@ public class AplicacionEmpleados {
 		frmGestinEmpleados.getContentPane().add(txtSalario);
 		txtSalario.setColumns(10);
 
-		txtFecha = new JTextField();
-		// txtFecha.setEditable(false);
-		txtFecha.setBounds(116, 214, 86, 20);
-		frmGestinEmpleados.getContentPane().add(txtFecha);
-		txtFecha.setColumns(10);
-		
 		txtfechaedit = new JTextFieldDateEditor();
 		txtfechaedit.setBounds(116, 244, 86, 20);
 		frmGestinEmpleados.getContentPane().add(txtfechaedit);
 		txtfechaedit.setColumns(10);
 		txtfechaedit.setDateFormatString("yyyy-MM-dd");
-		
+
 		txtApellido = new JTextField();
 		txtApellido.setBounds(116, 66, 86, 20);
 		frmGestinEmpleados.getContentPane().add(txtApellido);
@@ -273,7 +310,7 @@ public class AplicacionEmpleados {
 		calendario = new JCalendar();
 		calendario.addPropertyChangeListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent evt) {
-				txtFecha.setText(String.format("%tF", calendario.getDate()));
+				txtfechaedit.setText(String.format("%tF", calendario.getDate()));
 			}
 		});
 		calendario.setBounds(237, 204, 318, 209);
