@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_301"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/Users/dam2alu2/eclipse-workspace/LIBRERIAS/objectdb-2.8.7/objectdb-2.8.7/bin/objectdb.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/Users/dam2alu2/eclipse-workspace/LIBRERIAS/objectdb-2.8.7/objectdb-2.8.7/doc/api-javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
