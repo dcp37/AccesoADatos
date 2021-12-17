@@ -7,5 +7,10 @@
 			<attribute name="javadoc_location" value="file:/C:/Users/dam2alu2/eclipse-workspace/LIBRERIAS/objectdb-2.8.7/objectdb-2.8.7/doc/api-javadoc/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/dam2alu2/eclipse-workspace/LIBRERIAS/validation-api-2.0.0.Final.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/dam2alu2/eclipse-workspace/LIBRERIAS/validation-api-2.0.0.Final-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

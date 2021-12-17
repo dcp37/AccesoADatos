@@ -3,9 +3,6 @@
  */
 package ejemplo1;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +27,10 @@ public class AccesoDatos {
 		emf.close();
 	}
 
+	/**
+	 * @param numDept Busca un departamento entre los existentes
+	 * @return devuelve un objeto Departamento con el código buscado
+	 */
 	public DepartamentosEntity buscaDepartamento(int numDept) {
 		return em.find(DepartamentosEntity.class, numDept);
 	}
@@ -97,6 +98,10 @@ public class AccesoDatos {
 		}
 	}
 
+	/**
+	 * @param numDept un número que corresponde al atributo del DepartamentoEntity
+	 * @return true si el departamento no es nulo o si no está vacío
+	 */
 	public boolean borrarDepartamento(int numDept) {
 
 		DepartamentosEntity departamentoBuscado = buscaDepartamento(numDept);
@@ -142,12 +147,73 @@ public class AccesoDatos {
 	}
 
 	public void ejer8_1() {
-		TypedQuery<EmpleadosEntity> tq = em.createQuery("SELECT e FROM EmpleadosEntity e",
-				EmpleadosEntity.class);
+		TypedQuery<EmpleadosEntity> tq = em.createQuery("SELECT e FROM EmpleadosEntity e", EmpleadosEntity.class);
 		List<EmpleadosEntity> listaEmpleados = tq.getResultList();
 		for (EmpleadosEntity empleado : listaEmpleados) {
 			System.out.println(empleado.getNombre() + " -> " + empleado.getAlta() + "--");
 		}
 		System.out.println();
+	}
+
+	public void ejer8_2() {
+		String carrera = "Carrera";
+		TypedQuery<EmpleadosEntity> typedQuery = em.createQuery("SELECT e FROM EmpleadosEntity e ",
+				EmpleadosEntity.class);
+		List<EmpleadosEntity> listaEmpleados = typedQuery.getResultList();
+
+		for (EmpleadosEntity empleado : listaEmpleados) {
+			if (empleado.getNombre().contains(carrera)) {
+				System.out.println(empleado.getNombre() + " -> " + empleado.getAlta() + "--");
+			}
+		}
+	}
+
+	public void ejer8_3() {
+		TypedQuery<EmpleadosEntity> tqEmp = em.createQuery("SELECT e FROM EmpleadosEntity e ", EmpleadosEntity.class);
+		List<EmpleadosEntity> listaEmpleados = tqEmp.getResultList();
+		for (EmpleadosEntity empleados : listaEmpleados) {
+			// System.out.println("kk1");
+			if (empleados.getOficio().equals("Empleado")) {
+				// System.out.println("kk2");
+				if (empleados.getDepartamento().getNombre().equals("I+D")) {
+					System.out.println(empleados.getNombre() + " " + empleados.getOficio() + " " + " "
+							+ empleados.getDepartamento().getNombre());
+				}
+			}
+		}
+	}
+
+	public void ejer8_4() {
+		TypedQuery<EmpleadosEntity> tqEmp = em.createQuery("SELECT e FROM EmpleadosEntity e WHERE YEAR(e.alta)>=2003",
+				EmpleadosEntity.class);
+		List<EmpleadosEntity> listaEmpleados = tqEmp.getResultList();
+		for (EmpleadosEntity empleados : listaEmpleados) {
+			System.out.println(empleados.getNombre() + " " + empleados.getAlta());
+		}
+	}
+
+	public void ejer8_5() {
+		TypedQuery<EmpleadosEntity> tqEmp = em.createQuery(
+				"SELECT e FROM EmpleadosEntity e ORDER BY e.departamento.nombre ASC", EmpleadosEntity.class);
+		List<EmpleadosEntity> listaEmpleados = tqEmp.getResultList();
+		for (EmpleadosEntity empleados : listaEmpleados) {
+			System.out.println(empleados.getDepartamento().getNombre() + " " + empleados.getNombre());
+		}
+
+	}
+
+	public void ejer8_6() {
+		TypedQuery<EmpleadosEntity> tqDept = em.createQuery("SELECT SUM(d.empleados.salario) FROM DepartamentosEntity d WHERE d.empleados != null",
+				EmpleadosEntity.class);
+		List<EmpleadosEntity>lista = tqDept.getResultList();
+		System.out.println(lista);
+		System.out.println("//////////////////////////////////////////");
+		TypedQuery<EmpleadosEntity> tqEmp = em.createQuery("SELECT e FROM EmpleadosEntity e WHERE " + "",
+				EmpleadosEntity.class);
+		List<EmpleadosEntity> listaEmpleados = tqEmp.getResultList();
+		for (EmpleadosEntity empleados : listaEmpleados) {
+			System.out.println(empleados.getDepartamento().getNombre());
+		}
+
 	}
 }
