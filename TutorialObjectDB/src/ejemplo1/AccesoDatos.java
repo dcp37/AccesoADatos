@@ -203,17 +203,51 @@ public class AccesoDatos {
 	}
 
 	public void ejer8_6() {
-		TypedQuery<EmpleadosEntity> tqDept = em.createQuery("SELECT SUM(d.empleados.salario) FROM DepartamentosEntity d WHERE d.empleados != null",
-				EmpleadosEntity.class);
-		List<EmpleadosEntity>lista = tqDept.getResultList();
-		System.out.println(lista);
-		System.out.println("//////////////////////////////////////////");
-		TypedQuery<EmpleadosEntity> tqEmp = em.createQuery("SELECT e FROM EmpleadosEntity e WHERE " + "",
-				EmpleadosEntity.class);
-		List<EmpleadosEntity> listaEmpleados = tqEmp.getResultList();
-		for (EmpleadosEntity empleados : listaEmpleados) {
-			System.out.println(empleados.getDepartamento().getNombre());
-		}
 
+		String query = "SELECT e.departamento.nombre, COUNT(e.departamento.empleados), SUM(e.salario), MAX(e.salario)"
+				+ " FROM EmpleadosEntity e" + " GROUP BY e.departamento.nombre";
+
+		String q = "SELECT d.nombre, COUNT(d.empleados),SUM(d.empleados.salario), MAX(d.empleados.salario)"
+				+ " FROM DepartamentosEntity d" + " GROUP BY d.empleados";
+
+		TypedQuery<Object[]> typedQuery = em.createQuery(query, Object[].class);
+		List<Object[]> lista = typedQuery.getResultList();
+		for (Object[] resultado : lista) {
+			System.out.println("Nombre :  " + resultado[0] + ", TotalEmpleados: " + resultado[1] + ", SalarioTotal: "
+					+ resultado[2] + ", SalarioMáximo: " + resultado[3]);
+		}
 	}
+
+	public void ejer8_7() {
+		// igual que el anterior pero los departamentos que tengan 5 o más empleados
+	}
+
+	public void ejer8_8() {
+		// empleados y sus jefes
+		TypedQuery<EmpleadosEntity> tqEmp = em.createQuery("SELECT e FROM EmpleadosEntity e ", EmpleadosEntity.class);
+		List<EmpleadosEntity> listaEmp = tqEmp.getResultList();
+		for (EmpleadosEntity empleado : listaEmp) {
+			System.out.println(empleado.getNombre() + " y su jefe es " + empleado.getDirId());
+		}
+	}
+
+	public void ejer8_9() {
+		// Nombre y total de empleados de los departamentos con algún empleado
+		TypedQuery<DepartamentosEntity> tqDept = em.createQuery(
+				"SELECT d FROM DepartamentosEntity d WHERE d.empleados != null", DepartamentosEntity.class);
+		List<DepartamentosEntity> listaDept = tqDept.getResultList();
+		for (DepartamentosEntity departamento : listaDept) {
+			System.out.println(departamento.getNombre() + " - " + departamento.getEmpleados());
+		}
+	}
+
+	public void ejer8_10() {
+		TypedQuery<Object[]> typedQuery = em.createQuery("SELECT d.nombre, COUNT(d.empleados.empnoId) FROM DepartamentosEntity d", Object[].class);
+		List<Object[]> lista = typedQuery.getResultList();
+		for (Object[] resultado : lista) {
+			System.out.println("Nombre :  " + resultado[0] + ", TotalEmpleados: " + resultado[1]);
+		}
+	}
+	
+	
 }

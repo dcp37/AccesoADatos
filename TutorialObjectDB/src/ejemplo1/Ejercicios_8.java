@@ -7,7 +7,7 @@ package ejemplo1;
  * @author David♥
  *
  */
-public class Ejercicios {
+public class Ejercicios_8 {
 
 	/**
 	 * @param args
@@ -27,7 +27,15 @@ public class Ejercicios {
 		System.out.println("*********EJERCICIO 5****************************");
 		accd.ejer8_5();
 		System.out.println("*********EJERCICIO 6****************************");
-		accd.ejer8_6();
+		//accd.ejer8_6();
+		System.out.println("*********EJERCICIO 7****************************");
+		// accd.ejer8_7();
+		System.out.println("*********EJERCICIO 8****************************");
+		// accd.ejer8_8();
+		System.out.println("*********EJERCICIO 9****************************");
+		//accd.ejer8_9();
+		System.out.println("*********EJERCICIO 10****************************");
+		accd.ejer8_10();
 		accd.desconectar();
 	}
 
