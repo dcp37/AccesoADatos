@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
+import javax.transaction.Transaction;
 
 /**
  * @author David♥
@@ -203,18 +204,13 @@ public class AccesoDatos {
 	}
 
 	public void ejer8_6() {
-
-		String query = "SELECT e.departamento.nombre, COUNT(e.departamento.empleados), SUM(e.salario), MAX(e.salario)"
-				+ " FROM EmpleadosEntity e" + " GROUP BY e.departamento.nombre";
-
-		String q = "SELECT d.nombre, COUNT(d.empleados),SUM(d.empleados.salario), MAX(d.empleados.salario)"
-				+ " FROM DepartamentosEntity d" + " GROUP BY d.empleados";
-
-		TypedQuery<Object[]> typedQuery = em.createQuery(query, Object[].class);
-		List<Object[]> lista = typedQuery.getResultList();
-		for (Object[] resultado : lista) {
-			System.out.println("Nombre :  " + resultado[0] + ", TotalEmpleados: " + resultado[1] + ", SalarioTotal: "
-					+ resultado[2] + ", SalarioMáximo: " + resultado[3]);
+		TypedQuery<Object[]> tq = em.createQuery(
+				"SELECT d.nombre, count(d.empleados.getEmpnoId()), sum(d.empleados.getSalario()), max(d.empleados.getSalario())"
+						+ " FROM DepartamentosEntity d" + " WHERE d.empleados != null",
+				Object[].class);
+		List<Object[]> lista = tq.getResultList();
+		for (Object[] cosa : lista) {
+			System.out.println(cosa[0] + " - " + cosa[1] + " - " + cosa[2] + cosa[3]);
 		}
 	}
 
@@ -242,12 +238,82 @@ public class AccesoDatos {
 	}
 
 	public void ejer8_10() {
-		TypedQuery<Object[]> typedQuery = em.createQuery("SELECT d.nombre, COUNT(d.empleados.empnoId) FROM DepartamentosEntity d", Object[].class);
+		TypedQuery<Object[]> typedQuery = em
+				.createQuery("SELECT d.nombre, COUNT(d.empleados.empnoId) FROM DepartamentosEntity d", Object[].class);
 		List<Object[]> lista = typedQuery.getResultList();
 		for (Object[] resultado : lista) {
 			System.out.println("Nombre :  " + resultado[0] + ", TotalEmpleados: " + resultado[1]);
 		}
 	}
-	
-	
+
+	public void ejer8_11() {
+		TypedQuery<Object[]> tq = em.createQuery(
+				"SELECT d.dptoId, d.empleados.nombre, d.empleados.salario FROM DepartamentosEntity AS d ORDER BY d.dptoId DESC, d.empleados.salario ASC",
+				Object[].class);
+		List<Object[]> lista = tq.getResultList();
+		for (Object[] elm : lista) {
+			System.out.println(elm[0] + " - " + elm[1] + " - " + elm[2] + " - ");
+		}
+
+	}
+
+	public void ejer8_12() {
+		TypedQuery<EmpleadosEntity> tq = em.createQuery("SELECT e FROM EmpleadosEntity AS e WHERE e.dirId == null",
+				EmpleadosEntity.class);
+		List<EmpleadosEntity> lista = tq.getResultList();
+		for (EmpleadosEntity empleado : lista) {
+			System.out.println(empleado.getEmpnoId() + "-" + empleado.getNombre());
+		}
+	}
+
+	public void ejer8_13() {
+		TypedQuery<EmpleadosEntity> tq = em.createQuery("SELECT e FROM EmpleadosEntity AS e WHERE e.empnoId = 1039",
+				EmpleadosEntity.class);
+		List<EmpleadosEntity> lista = tq.getResultList();
+		for (EmpleadosEntity empleado : lista) {
+			System.out.println(empleado.getDepartamento().getDptoId() + " - " + empleado.getDepartamento().getNombre());
+		}
+	}
+
+	public int incrementarSalario(int cantidad) {
+		int filasModificadas;
+		Query q = em.createQuery("UPDATE EmpleadosEntity SET salario = salario + " + cantidad);
+		EntityTransaction t = em.getTransaction();
+		t.begin();
+		filasModificadas = q.executeUpdate();
+		t.commit();
+		return filasModificadas;
+	}
+
+	public int incrementarSalarioOficio(String oficio, int cantidad) {
+		int filasModificadas;
+		em.getTransaction().begin();
+		Query q = em.createQuery("UPDATE EmpleadosEntity SET salario = salario + :din WHERE oficio = :ofi");
+		q.setParameter("din", cantidad);
+		q.setParameter("ofi", oficio);
+		filasModificadas = q.executeUpdate();
+		em.getTransaction().commit();
+		return filasModificadas;
+	}
+
+	public int incrementarSalarioDepartamento(int numDept, int cantidad) {
+		int filasModificadas;
+		Query q = em.createQuery("UPDATE EmpleadosEntity AS e" + " SET salario = salario + " + cantidad
+				+ " WHERE e.departamento.getDptoId() = " + numDept);
+		EntityTransaction t = em.getTransaction();
+		t.begin();
+		filasModificadas = q.executeUpdate();
+		t.commit();
+		return filasModificadas;
+	}
+
+	public int borrarEmpleado(int numEmpl) {
+		int filasModificadas;
+		em.getTransaction().begin();
+		Query q = em.createQuery("DELETE FROM EmpleadosEntity WHERE empnoId = :empId");
+		q.setParameter("empId", numEmpl);
+		filasModificadas = q.executeUpdate();
+		em.getTransaction().commit();
+		return filasModificadas;
+	}
 }

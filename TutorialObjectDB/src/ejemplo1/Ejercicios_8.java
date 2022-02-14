@@ -27,7 +27,7 @@ public class Ejercicios_8 {
 		System.out.println("*********EJERCICIO 5****************************");
 		accd.ejer8_5();
 		System.out.println("*********EJERCICIO 6****************************");
-		//accd.ejer8_6();
+		accd.ejer8_6();
 		System.out.println("*********EJERCICIO 7****************************");
 		// accd.ejer8_7();
 		System.out.println("*********EJERCICIO 8****************************");
