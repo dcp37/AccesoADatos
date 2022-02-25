@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class AccesoDatos {
 
 	private static String driver = "com.mysql.cj.jdbc.Driver";
-	private static String database = "profesores";
+	private static String database = "pedidos";
 	private static String hostname = "localhost";
 	private static String port = "3306";
 	private static String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database

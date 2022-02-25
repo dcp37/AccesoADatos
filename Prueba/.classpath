@@ -8,6 +8,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
-	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="C:/Users/dam2alu2/eclipse-workspace/LIBRERIAS/mysql-connector-java-8.0.21.jar"/>
+	<classpathentry kind="con" path="org.eclipse.datatools.connectivity.jdt.DRIVERLIBRARY/MySQL JDBC Driver"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
