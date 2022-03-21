@@ -1,68 +1,68 @@
+<%@page import="java.sql.Timestamp"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="modelo.Empleados, java.util.ArrayList"%>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Lista de Empleados</title>
+<title>Gestión Empleados</title>
 </head>
 <body>
 	<table>
 		<tr>
-			<th>Id Empleado</th>
+			<th>Id del Empleado</th>
 			<th>Apellidos</th>
 			<th>Nombre</th>
 			<th>Cargo</th>
 			<th>Tratamiento</th>
-			<th>Fecha Nacimiento</th>
-			<th>Fecha Contratación</th>
+			<th>Fecha de Nacimiento</th>
+			<th>Fecha de Contratación</th>
 			<th>Dirección</th>
 			<th>Ciudad</th>
 			<th>Región</th>
 			<th>Código Postal</th>
-			<th>Pais</th>
-			<th>Teléfono Domicilio</th>
+			<th>País</th>
+			<th>Teléfono del Domicilio</th>
 			<th>Extensión</th>
 			<th>Foto</th>
 			<th>Notas</th>
-			<th>Jefe</th>
+			<th>Su Jefe</th>
 		</tr>
-		<form method="post" action="InsertaEmpleado">
+		<form method="post" action=InsertaEmpleado>
 			<tr>
-				<td><input type="number" name="idEmpleado" min="1" /></td>
-				<td><input type="text" name="apellidos" size="20" /></td>
-				<td><input type="text" name="nombre" size="10" /></td>
-				<td><input type="text" name="cargo" size="30" /></td>
-				<td><input type="text" name="tratamiento" size="25" /></td>
-				<td><input type="datetime-local" name="fechaNacimiento" /></td>
-				<td><input type="datetime-local" name="fechaContratacion" /></td>
-				<td><input type="text" name="direccion" size="60" /></td>
-				<td><input name="ciudad" type="text" size="15" /></td>
-				<td><input name="region" type="text" size="15" /></td>
-				<td><input name="codPostal" type="text" size="10" /></td>
-				<td><input name="pais" type="text" size="15" /></td>
-				<td><input name="telDomicilio" type="tel" size="24"
-					pattern="\([0-9]{3}\) [0-9]{3}[-][0-9]{3}" /></td>
-				<td><input name="extension" type="text" size="24" /></td>
-				<td><input name="foto" type="text" /></td>
-				<td><input name="notas" type="text" /></td>
-				<td><input name="jefe" type="number" min="1" step="1" /></td>
-				<td><input type="submit" value="anñadirEmpleado" />Añadir</td>
+				<td><input type="text" name="IdEmpleado" size="5"></td>
+				<td><input type="text" name="Apellidos" /></td>
+				<td><input type="text" name="Nombre" size="30"></td>
+				<td><input type="text" name="Cargo" /></td>
+				<td><input type="text" name="Tratamiento" /></td>
+				<td><input type="datetime-local" name="FechaNacimiento" /></td>
+				<td><input type="datetime-local" name="FechaContratacion" /></td>
+				<td><input type="text" name="Direccion" /></td>
+				<td><input type="text" name="Ciudad" /></td>
+				<td><input type="text" name="Region" /></td>
+				<td><input type="text" name="CodPostal" /></td>
+				<td><input type="text" name="Pais" /></td>
+				<td><input type="text" name="TelDomicilio" /></td>
+				<td><input type="text" name="Extension" /></td>
+				<td><input type="text" name="Foto" /></td>
+				<td><input type="text" name="Notas" /></td>
+				<td><input type="text" name="Jefe" /></td>
+				<td><button type="submit" value="Añadir">Añadir</button></td>
 			</tr>
 		</form>
 		<%
-		ArrayList<Empleados> listaEmpleados = null;
-		listaEmpleados = (ArrayList<Empleados>) request.getAttribute("Empleados");
-		for (Empleados e : listaEmpleados) {
-			//out.println("<td>" + "</td>");
-			out.println("<tr><td>");
-			out.println(e.getIdEmpleado() + "</td>");
-			out.println("<td>" + e.getNombre() + "</td>");
+		ArrayList<Empleados> empleados = null;
+		empleados = (ArrayList<Empleados>) request.getAttribute("Empleados");
+
+		for (Empleados e : empleados) {
+
+			out.println("<tr>");
+			out.println("<td>" + e.getIdEmpleado() + "</td>");
 			out.println("<td>" + e.getApellidos() + "</td>");
+			out.println("<td>" + e.getNombre() + "</td>");
 			out.println("<td>" + e.getCargo() + "</td>");
 			out.println("<td>" + e.getTratamiento() + "</td>");
-			out.println("<td>" + e.getFechaNacimiento() + "</td>");
+ 			out.println("<td>" + e.getFechaNacimiento() + "</td>");
 			out.println("<td>" + e.getFechaContratacion() + "</td>");
 			out.println("<td>" + e.getDireccion() + "</td>");
 			out.println("<td>" + e.getCiudad() + "</td>");
@@ -74,10 +74,40 @@
 			out.println("<td>" + e.getFoto() + "</td>");
 			out.println("<td>" + e.getNotas() + "</td>");
 			out.println("<td>" + e.getJefe() + "</td>");
+		%>
+		<td>
+			<form method="post" action="modificaProfesor.jsp">
+				<input type="hidden" name="id" value="<%=e.getIdEmpleado()%>" /> <input
+					type="hidden" name="apellidos" value="<%=e.getApellidos()%>" /> <input
+					type="hidden" name="nombre" value="<%=e.getNombre()%>" /> <input
+					type="hidden" name="cargo" value="<%=e.getCargo()%>" /><input
+					type="hidden" name="tratamiento" value="<%=e.getTratamiento()%>" /><input
+					type="hidden" name="fechaNacimiento"
+					value="<%=e.getFechaNacimiento()%>" /><input type="hidden"
+					name="fechaContratacion" value="<%=e.getFechaContratacion()%>" /><input
+					type="hidden" name="direccion" value="<%=e.getDireccion()%>" /><input
+					type="hidden" name="ciudad" value="<%=e.getCiudad()%>" /><input
+					type="hidden" name="region" value="<%=e.getRegion()%>" /><input
+					type="hidden" name="codPostal" value="<%=e.getCodPostal()%>" /><input
+					type="hidden" name="pais" value="<%=e.getPais()%>" /><input
+					type="hidden" name="telDomicilio" value="<%=e.getTelDomicilio()%>" /><input
+					type="hidden" name="extension" value="<%=e.getExtension()%>" /><input
+					type="hidden" name="foto" value="<%=e.getFoto()%>" /><input
+					type="hidden" name="notas" value="<%=e.getNotas()%>" /><input
+					type="hidden" name="jefe" value="<%=e.getJefe()%>" />
+				<button type="submit">Modificar</button>
+			</form>
+		</td>
+		<td>
+			<form method="post" action="BorraEmpleado">
+				<input type="hidden" name="id" value="<%=e.getIdEmpleado()%>" />
+				<button type="submit">Eliminar</button>
+			</form>
+		</td>
+		</tr>
+		<%
 		}
-		%><!--
-			
-		  -->
+		%>
 	</table>
 </body>
 </html>

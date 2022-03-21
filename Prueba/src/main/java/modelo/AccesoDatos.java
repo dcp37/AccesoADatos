@@ -41,25 +41,25 @@ public class AccesoDatos {
 			String region, String codPostal, String pais, String telefono, String extension, String foto, String notas,
 			Integer jefe) {
 		try {
-			String sql = "INSERT INTO empleados values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO empleados values( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement inserta = conecta.prepareStatement(sql);
-			inserta.setInt(1, idEmpleado);
-			inserta.setString(2, apellidos);
-			inserta.setString(3, nombre);
-			inserta.setString(4, cargo);
-			inserta.setString(5, tratamiento);
-			inserta.setDate(6, fechaNacimiento);
-			inserta.setDate(7, fechaContratacion);
-			inserta.setString(8, direccion);
-			inserta.setString(9, ciudad);
-			inserta.setString(10, region);
-			inserta.setString(11, codPostal);
-			inserta.setString(12, pais);
-			inserta.setString(13, telefono);
-			inserta.setString(14, extension);
-			inserta.setString(15, foto);
-			inserta.setString(16, notas);
-			inserta.setInt(17, jefe);
+			//inserta.setInt(1, idEmpleado);
+			inserta.setString(1, apellidos);
+			inserta.setString(2, nombre);
+			inserta.setString(3, cargo);
+			inserta.setString(4, tratamiento);
+			inserta.setDate(5, fechaNacimiento);
+			inserta.setDate(6, fechaContratacion);
+			inserta.setString(7, direccion);
+			inserta.setString(8, ciudad);
+			inserta.setString(9, region);
+			inserta.setString(10, codPostal);
+			inserta.setString(11, pais);
+			inserta.setString(12, telefono);
+			inserta.setString(13, extension);
+			inserta.setString(14, foto);
+			inserta.setString(15, notas);
+			inserta.setInt(16, jefe);
 			inserta.executeUpdate();
 			return true;
 		} catch (SQLException e) {
@@ -126,6 +126,7 @@ public class AccesoDatos {
 						reg.getString(5), reg.getDate(6), reg.getDate(7), reg.getString(8), reg.getString(9),
 						reg.getString(10), reg.getString(11), reg.getString(12), reg.getString(13), reg.getString(14),
 						reg.getString(15), reg.getString(16), reg.getInt(17));
+
 				listaEmpleados.add(e);
 			}
 			consulta.close();
@@ -141,15 +142,15 @@ public class AccesoDatos {
 			PreparedStatement consulta = conecta.prepareStatement("SELECT * FROM empleados WHERE idEmpleado = ?");
 			consulta.setInt(1, idEmpleado);
 			ResultSet reg = consulta.executeQuery();
-			Empleados p = null;
+			Empleados e = null;
 			if (reg.next()) {
-				p = new Empleados(reg.getInt(1), reg.getString(2), reg.getString(3), reg.getString(4), reg.getString(5),
+				e = new Empleados(reg.getInt(1), reg.getString(2), reg.getString(3), reg.getString(4), reg.getString(5),
 						reg.getDate(6), reg.getDate(7), reg.getString(8), reg.getString(9), reg.getString(10),
 						reg.getString(11), reg.getString(12), reg.getString(13), reg.getString(14), reg.getString(15),
 						reg.getString(16), reg.getInt(17));
 			}
 			consulta.close();
-			return p;
+			return e;
 		} catch (SQLException e) {
 			System.out.println("error al realizar la consulta" + e.getMessage());
 			return null;
